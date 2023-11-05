@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Octokit.js</title>
+  </head>
+  <body>
+    <div style="margin: 3em">
+      <h1>github Octokit.js</h1>
+      <div>
+        access token:
+        <input type="text" id="accessToken" disabled />
+      </div>
+    </div>
+    <script type="module">
+      import { Octokit, App } from 'https://esm.sh/octokit';
+
+      const params = new URLSearchParams(location.search);
+      const accessToken = params.get('access_token');
+      document.getElementById('accessToken').value = accessToken;
+
+      const octokit = new Octokit({ auth: accessToken });
+
+      // const { data } = await octokit.rest.users.getAuthenticated();
+      // console.log(data);
+
+      // const { data: repos } =
+      //   await octokit.rest.repos.listForAuthenticatedUser();
+      // console.log(repos);
+
+      // org 가져오기
+      // const { data: orgs } = await octokit.rest.orgs.listForAuthenticatedUser();
+      // console.log(orgs);
+
+      // 이슈만들기
+      // const { data: issue } = await octokit.rest.issues.create({
+      //   owner: 'niceaji',
+      //   repo: 'test',
+      //   title: 'test issue',
+      //   body: 'test issue body',
+      // });
+
+      // 파일 가져오기
+      // const data = await octokit.request(
+      //   'GET /repos/niceaji/test/contents/README.md',
+      //   {
+      // 			owner: 'OWNER',
+      // repo: 'REPO',
+      // path: 'PATH',
+      //     headers: {
+      //       'X-GitHub-Api-Version': '2022-11-28',
+      //     },
+      //   }
+      // );
+      // console.log(data);
+
+      // 파일 생성하기
+      // https://docs.github.com/ko/rest/repos/contents?apiVersion=2022-11-28
+      const data = await octokit.request(
+        'PUT /repos/niceaji/test/contents/abc/test1.txt',
+        {
+          owner: 'OWNER',
+          repo: 'REPO',
+          path: 'PATH',
+          message: 'my commit messag111e',
+          content: btoa('test'),
+          sha: '30d74d258442c7c65512eafab474568dd706c430', // 수정시 필요
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        }
+      );
+      console.log(data);
+    </script>
+  </body>
+</html>

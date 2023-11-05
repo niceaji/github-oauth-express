@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GitHub OAuth Login</title>
+    <style>
+      textarea {
+        width: 100%;
+        height: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="margin: 3em">
+      <h1>GitHub OAuth Login</h1>
+      <button id="login-button">Login</button>
+
+      <hr />
+      <div>
+        access token:
+        <input type="text" id="accessToken" disabled />
+      </div>
+      <div>
+        refresh token:
+        <input type="text" id="refreshToken" disabled />
+      </div>
+      <details>
+        <summary>Get User</summary>
+        <button id="userBtn">get</button>
+        <textarea id="userInfo"></textarea>
+      </details>
+      <details>
+        <summary>Get Access Token</summary>
+        <button id="accessTokenBtn">get</button>
+        <textarea id="accessTokenInfo"></textarea>
+      </details>
+    </div>
+
+    <script>
+      const loginButton = document.getElementById('login-button');
+
+      loginButton.addEventListener('click', () => {
+        location.href = '/login';
+      });
+
+      const params = new URLSearchParams(location.search);
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
+
+      document.getElementById('accessToken').value = accessToken;
+      document.getElementById('refreshToken').value = refreshToken;
+
+      function printJSON(el, data) {
+        el.value = JSON.stringify(data, null, 2);
+      }
+
+      document.getElementById('userBtn').addEventListener('click', async () => {
+        if (!accessToken) return alert('access token이 없습니다.');
+
+        const res = await fetch('https://api.github.com/user', {
+          headers: {
+            Authorization: `token ${accessToken}`,
+          },
+        });
+        const data = await res.json();
+        printJSON(document.getElementById('userInfo'), data);
+      });
+
+      document
+        .getElementById('accessTokenBtn')
+        .addEventListener('click', async () => {
+          if (!refreshToken) return alert('refresh token이 없습니다.');
+
+          const res = await fetch(
+            `/refresh/access-token?refresh_token=${refreshToken}`
+          );
+          const data = await res.json();
+          printJSON(document.getElementById('accessTokenInfo'), data);
+        });
+    </script>
+  </body>
+</html>
